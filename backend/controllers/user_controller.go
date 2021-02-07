@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/tanapon395/playlist-video/ent/user"
 
@@ -47,10 +48,10 @@ func (ctl *UserController) CreateUser(c *gin.Context) {
 		Save(context.Background())
 
 	if err != nil {
-		fmt.Println(err)
+		e := strings.Split(err.Error(), ":")
 		c.JSON(400, gin.H{
 			"status": false,
-			"error":  err,
+			"error":  e[2],
 		})
 		return
 	}
