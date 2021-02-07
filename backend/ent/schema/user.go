@@ -51,7 +51,7 @@ func (User) Fields() []ent.Field {
 		field.Int("age").
 		Validate(func(s int) error {
 			
-			if s < 0 {
+			if s <= 0 {
 				return errors.New("อายุไม่ถูกต้อง")
 			}
 			return nil
