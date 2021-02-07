@@ -166,7 +166,10 @@ const WatchVideo: FC<{}> = () => {
             title: 'บันทึกข้อมูลสำเร็จ',
           });
         } else {
-          checkCaseSaveError(data.error.Name)
+          Toast.fire({
+            icon: 'error',
+            title: data.error,
+          });
         }
       });
   };

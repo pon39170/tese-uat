@@ -35,7 +35,21 @@ func init() {
 	// userDescName is the schema descriptor for name field.
 	userDescName := userFields[1].Descriptor()
 	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	user.NameValidator = func() func(string) error {
+		validators := userDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// userDescIdentificationNumber is the schema descriptor for identification_number field.
 	userDescIdentificationNumber := userFields[2].Descriptor()
 	// user.IdentificationNumberValidator is a validator for the "identification_number" field. It is called by the builders before save.
@@ -44,6 +58,7 @@ func init() {
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
+			validators[2].(func(string) error),
 		}
 		return func(identification_number string) error {
 			for _, fn := range fns {
@@ -61,7 +76,21 @@ func init() {
 	// userDescAge is the schema descriptor for age field.
 	userDescAge := userFields[4].Descriptor()
 	// user.AgeValidator is a validator for the "age" field. It is called by the builders before save.
-	user.AgeValidator = userDescAge.Validators[0].(func(int) error)
+	user.AgeValidator = func() func(int) error {
+		validators := userDescAge.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(age int) error {
+			for _, fn := range fns {
+				if err := fn(age); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	videoFields := schema.Video{}.Fields()
 	_ = videoFields
 	// videoDescName is the schema descriptor for name field.

@@ -25,10 +25,37 @@ func (User) Fields() []ent.Field {
 			return nil
 		}),
 		// field.String("student_id").Match(regexp.MustCompile("[BMD]\\d{7}")),
-		field.String("name").NotEmpty(),
-		field.String("identification_number").MaxLen(13).MinLen(13),
-		field.String("email").Match(regexp.MustCompile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")),
-		field.Int("age").Min(1),
+		field.String("name").
+		Validate(func(s string) error {
+			
+			if len(s) == 0 {
+				return errors.New("โปรดกรอกชื่อและนามสกุล")
+			}
+			return nil
+		}).NotEmpty(),
+		field.String("identification_number").
+		Validate(func(s string) error {
+			
+			if len(s) != 13 {
+				return errors.New("รหัสประจำตัวประชาชนไม่ครบ")
+			}
+			return nil
+		}).MaxLen(13).MinLen(13),
+		field.String("email").Validate(func(s string) error {
+			match, _ := regexp.MatchString("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",s)
+			if !match {
+				return errors.New("Email ไม่ถูกต้อง")
+			}
+			return nil
+		}),
+		field.Int("age").
+		Validate(func(s int) error {
+			
+			if s < 0 {
+				return errors.New("อายุไม่ถูกต้อง")
+			}
+			return nil
+		}).Min(1),
 	}
 }
 
